@@ -1,170 +1,89 @@
-// const { NULL } = require("mysql/lib/protocol/constants/types");
+let displayValue = "0";
+let firstNumber = null;
+let operator = null;
+let secondNumber = null;
 
-let num1 = 0;
-let num2 = 0;
-let sign;
-let currentNumber = "0";
-let s = 0;
-let result = 0;
-const display = document.querySelector('#dis');
-const btnNum = document.querySelectorAll('.number');
-const operators = document.querySelectorAll('.operator');
-const equal = document.querySelector('.equals');
-const clear =document.querySelector('.clear')
+const display = document.getElementById("display");
 
-function add(a, b) {
-    return a + b;
+function updateDisplay() {
+  display.textContent = displayValue;
 }
 
-function subtract(a, b) {
-    return a - b;
+function clearDisplay() {
+  displayValue = "0";
+  firstNumber = null;
+  operator = null;
+  secondNumber = null;
+  updateDisplay();
 }
 
-function multiply(a, b) {
-    return a * b;
+function backspace() {
+  if (displayValue.length === 1) {
+    displayValue = "0";
+  } else {
+    displayValue = displayValue.slice(0, -1);
+  }
+  updateDisplay();
 }
 
-function divide(a, b) {
-    if (b === 0) {
-        console.log("ERROR: Nothing is divided by Zero");
-        return undefined;
-    }
-    return a / b;
+function appendNumber(num) {
+  if (displayValue === "0") {
+    displayValue = num;
+  } else {
+    displayValue += num;
+  }
+  updateDisplay();
 }
 
-function operate(operator, ...args) {
-    if (operator === "+") {
-        return add(args[0], args[1]);
-    } else if (operator === "-") {
-        return subtract(args[0], args[1]);
-    } else if (operator === "/") {
-        return divide(args[0], args[1]);
-    } else if (operator === "x") {
-        return multiply(args[0], args[1]);
+function appendDecimal() {
+  if (!displayValue.includes(".")) {
+    displayValue += ".";
+  }
+  updateDisplay();
+}
+
+function appendOperator(op) {
+  if (operator !== null) {
+    calculate();
+  }
+  firstNumber = parseFloat(displayValue);
+  operator = op;
+  displayValue = "0";
+}
+
+function calculate() {
+  secondNumber = parseFloat(displayValue);
+  if (operator === "+") {
+    displayValue = (firstNumber + secondNumber).toString();
+  } else if (operator === "-") {
+    displayValue = (firstNumber - secondNumber).toString();
+  } else if (operator === "*") {
+    displayValue = (firstNumber * secondNumber).toString();
+  } else if (operator === "/") {
+    if (secondNumber === 0) {
+      displayValue = "Error: Cannot divide by zero!";
     } else {
-        return "you chose the wrong operator";
+      displayValue = (firstNumber / secondNumber).toString();
     }
+  }
+  firstNumber = null;
+  operator = null;
+  secondNumber = null;
+  updateDisplay();
 }
 
-
-btnNum.forEach((num) => {
-    num.addEventListener("click", () => {
-        const clickval = num.textContent;
-        if (currentNumber === "0" || currentNumber === 0) {
-            currentNumber = clickval;
-        } else {
-            currentNumber += clickval;
-        }
-        console.log(currentNumber);
-        display.textContent = currentNumber;
-    });
+// Handle keyboard input
+document.addEventListener("keydown", (event) => {
+  const key = event.key;
+  if (!isNaN(key) || key === ".") {
+    appendNumber(key);
+  } else if (key === "+" || key === "-" || key === "*" || key === "/") {
+    appendOperator(key);
+  } else if (key === "Enter") {
+    calculate();
+  } else if (key === "Backspace") {
+    backspace();
+  }
 });
 
-
-operators.forEach(operator => {
-    operator.addEventListener('click', () => {
-
-        if (num1 === 0 || num1 === null) {
-            num1 = currentNumber;
-            sign = operator.textContent;
-            console.log(num1);
-            console.log(sign);
-            currentNumber = 0;
-            
-
-            
-            // num1;
-            // console.log(num1)
-            // sign = operator.textContent
-            // num2 = Number(currentNumber);
-            // console.log(num2)
-            // // var result = operate(sign, num1, num2);
-            // // display.textContent = result;
-
-            // num1 = result;
-            // console.log(num1);
-            // sign = operator.textContent;
-            // console.log(sign);
-
-            // currentNumber = '0';
-        } else {
-            num2 = currentNumber;
-            display.textContent = num2
-             result = operate(sign, Number(num1), Number(num2))
-            sign = operator.textContent
-            console.log(sign)
-
-            num1 = result;
-            display.textContent = Math.round((result) * 100) /100;
-
-            // sign = '';
-            
-        }
-            currentNumber = 0;
-
-        // if(sign !== null || sign !== 0 || sign !== '0'){
-        //     s++;
-        //     console.log("this is the times:" + s)
-        // }
-        
-    });
-});
-equal.addEventListener("click", () => {
-    if(num2 === 0){
-        result = operate(sign, Number(num1), Number(currentNumber))
-        display.textContent = Math.round((result) * 100) /100;
-    }else{
-        num2 = currentNumber;
-            display.textContent = num2
-             result = operate(sign, Number(num1), Number(num2))
-            // sign = operator.textContent
-            // console.log(sign)
-
-            num1 = result;
-            display.textContent = Math.round((result) * 100) /100;
-
-            // sign = '';
-            
-        // result = operate(sign, Number(num1), Number(num2))
-        // display.textContent = Math.round((result) * 100) /100;
-        // sign =''
-    }
-    // result = operate(sign, Number(num1), Number(num2))
-    // sign = ''
-    
-    // num2 =''
-    // currentNumber = 0
-})
-    // function equalas(){
-    //     if (num1 !== 0 && sign !== null && currentNumber !== '0') {
-    //         num2 = Number(currentNumber);
-    //         var result = operate(sign, num1, num2);
-    //         display.textContent = Math.round((result) * 10) /10 ;
-    
-    //         num1 = result;
-    //         // display.textContent = Math.round((result) * 10) /10;
-    //         // sign = null;
-    //         num2 = 0;
-    //         currentNumber = '0';
-    //     }
-    // }
-    // equal.addEventListener('click', equalas);
-    // if (num1 !== 0 && sign !== null && currentNumber !== '0') {
-    //     num2 = Number(currentNumber);
-    //     var result = operate(sign, num1, num2);
-    //     display.textContent = Math.round((result) * 10) /10;
-
-    //     num1 = result;
-    //     // sign = null;
-    //     num2 = 0;
-    //     currentNumber = '0';
-    // }
-
-
-clear.addEventListener("click", () => {
-    num1 = 0
-    num2 = 0
-    sign = null
-    currentNumber = 0
-    display.textContent = ''
-})
+updateDisplay();
